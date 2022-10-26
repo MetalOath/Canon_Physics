@@ -6,39 +6,69 @@ using UnityEngine;
 
 public class CannonBallPhysics : MonoBehaviour
 {
-    private GameManager gameManager;
-
-    private int velocity = 0, angle = 0;
+    private GameManager _gameManager;
     
+    private Vector3 _velocity;
+
+    private float v, a;
+
     // Start is called before the first frame update
     void Start()
     {
-        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
 
-        if(int.TryParse(gameManager.velocityField.text, out int x))
-            velocity = x;
+        Debug.Log(_gameManager.velocityField.text);
+        Debug.Log(_gameManager.angleField.text);
+
+        if (float.TryParse(_gameManager.velocityField.text, out float vf))
+        {
+            v = vf;
+        }
+        else
+        {
+            Debug.Log("Parsing failed");
+        }
         
-        Debug.Log(velocity);
-
-        //angle = int.Parse(gameManager.angleField.text);
+        if (float.TryParse(_gameManager.angleField.text, out float af))
+        {
+            a = af;
+        }
+        else
+        {
+            Debug.Log("Parsing failed");
+        }
+        
+        _velocity += Vector3.up * Mathf.Sin(Mathf.Deg2Rad * a) * v;
+        _velocity += Vector3.right * Mathf.Cos(Mathf.Deg2Rad * a) * v;
     }
 
     // Update is called once per frame
     void Update()
     {
-        // velocity = distance / time
-        // acceleration = velocity / time
-        
-        transform.Translate(Vector3.up * -9.81f / (Time.deltaTime * Time.deltaTime));
-        
-        transform.Translate(Vector3.right * 20f * Time.deltaTime);
+        UpdateVelocity();
+        UpdatePosition();
+    }
+
+    private void UpdateVelocity()
+    {
+        _velocity += Physics.gravity * Time.deltaTime;
+    }
+ 
+    private void UpdatePosition()
+    {
+        transform.position += _velocity * Time.deltaTime;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Enemy") || other.CompareTag("Ground"))
+        if (other.CompareTag("Enemy"))
         {
             Destroy(other.gameObject);
+            Destroy(gameObject);
+        }
+        
+        if (other.CompareTag("Ground"))
+        {
             Destroy(gameObject);
         }
     }

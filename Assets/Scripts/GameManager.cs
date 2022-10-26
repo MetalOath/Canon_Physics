@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
 {
     public GameObject goodSpherePrefab, badSherePrefab;
     public GameObject enemySpawnPoint, projectileSpawnPoint;
-    public TextMeshProUGUI velocityField, angleField;
+    public TMP_InputField velocityField, angleField;
 
     public float enemySpawnSpeed = 1f;
 
